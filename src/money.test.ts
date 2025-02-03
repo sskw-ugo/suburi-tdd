@@ -29,4 +29,9 @@ describe('Franc', () => {
     assertEquals(new Franc(10), five.times(2));
     assertEquals(new Franc(15), five.times(3));
   })
+
+  it('equalができる', () => {
+    expect(new Franc(5).equals(new Franc(5))).toBe(true);
+    expect(new Franc(5).equals(new Franc(6))).toBe(false);
+  })
 })
