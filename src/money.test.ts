@@ -1,5 +1,5 @@
 import { it , expect, describe, test } from 'vitest';
-import { Dollar, Franc } from './money';
+import { Money, Dollar, Franc } from './money';
 
 type Equals<T> = {
   equals(some: T): boolean
@@ -11,33 +11,33 @@ function assertEquals<T>(foo: Equals<T>, bar: T) {
 
 describe('Dollar', () => {
   it('掛け算ができる', () => {
-    const five = new Dollar(5);
-    assertEquals(new Dollar(10), five.times(2));
-    assertEquals(new Dollar(15), five.times(3));
+    const five: Money = Money.dollar(5);
+    assertEquals(Money.dollar(10), five.times(2));
+    assertEquals(Money.dollar(15), five.times(3));
 
   })
 
   it('equalができる', () => {
-    expect(new Dollar(5).equals(new Dollar(5))).toBe(true);
-    expect(new Dollar(5).equals(new Dollar(6))).toBe(false);
+    expect(Money.dollar(5).equals(Money.dollar(5))).toBe(true);
+    expect(Money.dollar(5).equals(Money.dollar(6))).toBe(false);
   })
 })
 
 describe('Franc', () => {
   it('掛け算ができる', () => {
-    const five = new Franc(5);
-    assertEquals(new Franc(10), five.times(2));
-    assertEquals(new Franc(15), five.times(3));
+    const five = Money.franc(5);
+    assertEquals(Money.franc(10), five.times(2));
+    assertEquals(Money.franc(15), five.times(3));
   })
 
   it('equalができる', () => {
-    expect(new Franc(5).equals(new Franc(5))).toBe(true);
-    expect(new Franc(5).equals(new Franc(6))).toBe(false);
+    expect(Money.franc(5).equals(Money.franc(5))).toBe(true);
+    expect(Money.franc(5).equals(Money.franc(6))).toBe(false);
   })
 })
 
 describe('Money', () => {
   it('equalができる', () => {
-    expect(new Franc(5).equals(new Dollar(5))).toBe(false);
+    expect(Money.franc(5).equals(Money.dollar(5))).toBe(false);
   })
 })
