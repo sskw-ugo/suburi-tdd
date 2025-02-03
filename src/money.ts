@@ -4,7 +4,9 @@ class Money {
     this.amount = amount;
   }
   public equals(money: Money): boolean {
-    return this.amount === money.amount;
+    return (
+      this.constructor === money.constructor && this.amount === money.amount
+    );
   }
 }
 

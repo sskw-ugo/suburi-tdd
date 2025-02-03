@@ -35,3 +35,9 @@ describe('Franc', () => {
     expect(new Franc(5).equals(new Franc(6))).toBe(false);
   })
 })
+
+describe('Money', () => {
+  it('equalができる', () => {
+    expect(new Franc(5).equals(new Dollar(5))).toBe(false);
+  })
+})
