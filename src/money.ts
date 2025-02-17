@@ -5,7 +5,73 @@ interface MoneyMapping {
   CHF: Money;
 }
 
-export class Money {
+interface Hash {
+  hashCode(): number;
+}
+class HashMap<K extends Hash, V> {
+  private map: Map<number, V> = new Map();
+  public put(key: K, value: V) {
+    this.map.set(key.hashCode(), value);
+  }
+  public get(key: K): V | undefined {
+    return this.map.get(key.hashCode());
+  }
+  public remove(key: K) {
+    this.map.delete(key.hashCode());
+  }
+}
+
+interface Expression {
+  reduce(bank: Bank, to: Brand): Money;
+}
+
+class Pair implements Hash {
+  from: Brand;
+  to: Brand;
+  constructor(from: Brand, to: Brand) {
+    this.from = from;
+    this.to = to;
+  }
+  equals(pair: Pair): boolean {
+    return this.from === pair.from && this.to === pair.to;
+  }
+  hashCode(): number {
+    return 0;
+  }
+}
+
+export class Sum implements Expression {
+  augend: Money;
+  addend: Money;
+  constructor(augend: Money, addend: Money) {
+    this.augend = augend;
+    this.addend = addend;
+  }
+
+  public reduce(bank: Bank, to: Brand): Money {
+    const amount = this.augend.amount + this.addend.amount;
+    return Money.create(to, amount);
+  }
+
+}
+
+export class Bank {
+  private rates: HashMap<Pair, number> = new HashMap();
+  public reduce(source: Expression, to: Brand): Money {
+    return source.reduce(this, to);
+  }
+  public addRate(from: Brand, to: Brand, rate: number) {
+    this.rates.put(new Pair(from, to), rate);
+  }
+  rate(from: Brand, to: Brand): number {
+    if (from === to) {
+      return 1;
+    }
+    return this.rates.get(new Pair(from, to)) as number;
+  }
+}
+
+export class Money implements Expression {
   // ジェネリクスを使い、brandに応じた型を返すように定義
   static create<B extends Brand>(brand: B, amount: number): MoneyMapping[B] {
     switch (brand) {
@@ -39,6 +105,13 @@ export class Money {
   get currency(): Brand {
     return this._currency;
   }
+  public plus(addend: Money): Expression {
+    return new Sum(this, addend);
+  }
+  public reduce(bank: Bank, to: Brand): Money {
+    const rate = bank.rate(this.currency, to)
+    return new Money(this.amount / rate, to);
+  }
   public equals(money: Money): boolean {
     return this.currency === money.currency && this.amount === money.amount;
   }
@@ -46,6 +119,5 @@ export class Money {
     return new Money(this.amount * multiplier, this._currency);
   }
 }
-
 
 export class Franc extends Money {}
