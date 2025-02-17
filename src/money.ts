@@ -9,6 +9,7 @@ interface Hash {
   hashCode(): number;
 }
 class HashMap<K extends Hash, V> {
+  // TODO(@sskw-ugo): 間に合わせの実装！
   private map: Map<number, V> = new Map();
   public put(key: K, value: V) {
     this.map.set(key.hashCode(), value);
