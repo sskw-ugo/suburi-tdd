@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { assert, describe, expect, it } from 'vitest';
 import { Bank, Money, Sum } from './money';
 
 type Equals<T> = {
@@ -70,4 +70,34 @@ describe('Money', () => {
     expect(Money.dollar(1).currency).toBe('USD');
     expect(Money.franc(1).currency).toBe('CHF');
   })
+
+  it('異なる通貨を足し算できる', () => {
+    const bank = new Bank();
+    bank.addRate('CHF', 'USD', 2);
+    const fiveBucks: Expression = Money.dollar(5);
+    const tenFrancs: Expression = Money.franc(10);
+    const result = bank.reduce(fiveBucks.plus(tenFrancs), 'USD');
+    assertEquals(Money.dollar(10), result);
+  })
+
+  it('Sumと通貨を足し算できる', () => {
+    const fiveBucks = Money.dollar(5);
+    const tenFrancs = Money.franc(10);
+    const bank = new Bank();
+    bank.addRate("CHF", "USD", 2);
+    const sum = new Sum(fiveBucks, tenFrancs).plus(fiveBucks);
+    const result = bank.reduce(sum, "USD");
+    assertEquals(Money.dollar(15), result)
+  })
+
+  it('Sumを掛け算できる', () => {
+    const fiveBucks = Money.dollar(5);
+    const tenFrancs = Money.franc(10);
+    const bank = new Bank();
+    bank.addRate("CHF", "USD", 2);
+    const sum = new Sum(fiveBucks, tenFrancs).times(2);
+    const result = bank.reduce(sum, "USD");
+    assertEquals(Money.dollar(20), result);
+  })
+
 })

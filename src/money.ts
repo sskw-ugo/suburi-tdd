@@ -23,6 +23,8 @@ class HashMap<K extends Hash, V> {
 }
 
 interface Expression {
+  plus(addend: Expression): Expression;
+  times(multiplier: number): Expression;
   reduce(bank: Bank, to: Brand): Money;
 }
 
@@ -42,15 +44,24 @@ class Pair implements Hash {
 }
 
 export class Sum implements Expression {
-  augend: Money;
-  addend: Money;
-  constructor(augend: Money, addend: Money) {
+  augend: Expression;
+  addend: Expression;
+  constructor(augend: Expression, addend: Expression) {
     this.augend = augend;
     this.addend = addend;
   }
 
+  public plus(addend: Expression): Expression {
+    return new Sum(this, addend);
+  }
+
+  public times(multiplier: number): Expression {
+    return new Sum(this.augend.times(multiplier), this.augend.times(multiplier));
+  }
+
   public reduce(bank: Bank, to: Brand): Money {
-    const amount = this.augend.amount + this.addend.amount;
+    const amount = this.augend.reduce(bank, to).amount
+      + this.addend.reduce(bank, to).amount;
     return Money.create(to, amount);
   }
 
@@ -106,7 +117,7 @@ export class Money implements Expression {
   get currency(): Brand {
     return this._currency;
   }
-  public plus(addend: Money): Expression {
+  public plus(addend: Expression): Expression {
     return new Sum(this, addend);
   }
   public reduce(bank: Bank, to: Brand): Money {
