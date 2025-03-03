@@ -12,43 +12,41 @@ class TestCase {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const method = (this as any)[this.name] as () => void;
     method.call(this);
+
+    this.tearDown();
   }
 
   setUp() {
     // do nothing
   }
+
+  tearDown() {
+    // do nothing
+  }
 }
 
 class WasRun extends TestCase {
-  wasRun = false;
-  wasSetUp = false;
+  log = "";
 
   testMethod() {
-    this.wasRun = true;
+    this.log += "testMethod ";
   }
 
   override setUp() {
-    this.wasRun = false;
-    this.wasSetUp = true;
+    this.log = "setUp ";
+  }
+
+  override tearDown(): void {
+    this.log += "tearDown ";
   }
 }
 
 class TestCaseTest extends TestCase {
-  test?: WasRun;
-
-  override setUp() {
-    this.test = new WasRun("testMethod");
-  }
-  testRunning() {
-    this.test?.run();
-    assert(this.test?.wasRun);
-  }
-
-  testSetUp() {
-    this.test?.run();
-    assert(this.test?.wasSetUp);
+  testTemplateMethod() {
+    const test = new WasRun("testMethod");
+    test.run();
+    assert("setUp testMethod tearDown " === test.log);
   }
 }
 
-new TestCaseTest("testRunning").run();
-new TestCaseTest("testSetUp").run();
+new TestCaseTest("testTemplateMethod").run();
