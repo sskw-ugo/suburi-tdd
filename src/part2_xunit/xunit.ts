@@ -8,33 +8,47 @@ class TestCase {
   }
 
   run() {
+    this.setUp();
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     const method = (this as any)[this.name] as () => void;
     method.call(this);
   }
+
+  setUp() {
+    // do nothing
+  }
 }
 
 class WasRun extends TestCase {
-  wasRun: boolean;
-
-  constructor(name: string) {
-    super(name);
-    this.wasRun = false
-  }
+  wasRun = false;
+  wasSetUp = false;
 
   testMethod() {
     this.wasRun = true;
   }
-}
 
-class TestCaseTest extends TestCase {
-  testRunning() {
-    const test = new WasRun("testMethod");
-    assert(!test.wasRun);
-    test.run();
-    assert(test.wasRun);
+  override setUp() {
+    this.wasRun = false;
+    this.wasSetUp = true;
   }
 }
 
-const test = new TestCaseTest("testRunning");
-test.run();
+class TestCaseTest extends TestCase {
+  test?: WasRun;
+
+  override setUp() {
+    this.test = new WasRun("testMethod");
+  }
+  testRunning() {
+    this.test?.run();
+    assert(this.test?.wasRun);
+  }
+
+  testSetUp() {
+    this.test?.run();
+    assert(this.test?.wasSetUp);
+  }
+}
+
+new TestCaseTest("testRunning").run();
+new TestCaseTest("testSetUp").run();
