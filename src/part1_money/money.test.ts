@@ -1,5 +1,5 @@
 import { assert, describe, expect, it } from 'vitest';
-import { Bank, Money, Sum } from './money';
+import { Bank, Money, Sum } from '../money';
 
 type Equals<T> = {
   equals(some: T): boolean

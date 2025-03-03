@@ -6,6 +6,7 @@
   "scripts": {
     "test": "vitest",
     "test:unit": "vitest run --coverage",
+    "test:part2": "tsx --watch ./src/part2_xunit/xunit.ts",
     "check": "biome check"
   },
   "keywords": [],
